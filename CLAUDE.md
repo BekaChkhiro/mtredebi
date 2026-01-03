@@ -34,6 +34,10 @@ Food delivery platform სამტრედიისთვის.
   - order.controller.ts - route handlers + validation (Zod)
   - order.routes.ts - customer & restaurant dashboard endpoints
 - [x] ყველა endpoint დატესტილია და მუშაობს
+- [x] Driver API - მძღოლის მართვა
+  - driver.service.ts - status, location, order management
+  - driver.controller.ts - route handlers + validation (Zod)
+  - driver.routes.ts - driver endpoints
 
 ## Auth API Endpoints
 - `POST /api/v1/auth/send-otp` - OTP გაგზავნა (dev: console-ში)
@@ -69,19 +73,24 @@ Order Status Flow:
 PENDING → ACCEPTED → PREPARING → READY → DRIVER_ASSIGNED → PICKED_UP → DELIVERING → DELIVERED
 (ნებისმიერ ეტაპზე შესაძლებელია CANCELLED)
 
-## შემდეგი სესიაზე
-Driver API
-1. driver.service.ts - მძღოლის ფუნქციონალი
-2. driver.controller.ts - route handlers
-3. driver.routes.ts - endpoints
+## Driver API Endpoints
+Driver (protected - DRIVER):
+- `PUT /api/v1/driver/status` - ონლაინ/ოფლაინ სტატუსი
+- `PUT /api/v1/driver/location` - ლოკაციის განახლება
+- `GET /api/v1/driver/orders` - ხელმისაწვდომი შეკვეთები (READY სტატუსით)
+- `GET /api/v1/driver/orders/my` - მძღოლის აქტიური შეკვეთები
+- `GET /api/v1/driver/orders/history` - შეკვეთების ისტორია
+- `POST /api/v1/driver/orders/:id/accept` - შეკვეთის მიღება
+- `PUT /api/v1/driver/orders/:id/picked-up` - შეკვეთა აიღო რესტორნიდან
+- `PUT /api/v1/driver/orders/:id/delivering` - მიტანა დაიწყო
+- `PUT /api/v1/driver/orders/:id/delivered` - მიტანილი
 
-Endpoints:
-- PUT /api/v1/driver/status - ონლაინ/ოფლაინ სტატუსი
-- PUT /api/v1/driver/location - ლოკაციის განახლება
-- GET /api/v1/driver/orders - ხელმისაწვდომი შეკვეთები
-- POST /api/v1/driver/orders/:id/accept - შეკვეთის მიღება
-- PUT /api/v1/driver/orders/:id/picked-up - შეკვეთა აიღო
-- PUT /api/v1/driver/orders/:id/delivered - მიტანილი
+## შემდეგი სესიაზე
+Socket.io Real-time Events
+1. socket/index.ts - connection handling
+2. Order status updates broadcasting
+3. Driver location updates
+4. New order notifications for restaurants
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
@@ -90,6 +99,7 @@ Endpoints:
 - 2026-01-03: Auth API დასრულებული ✅
 - 2026-01-03: Restaurant API დასრულებული ✅
 - 2026-01-03: Order API დასრულებული ✅
+- 2026-01-03: Driver API დასრულებული ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)

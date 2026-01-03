@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authRoutes } from './auth.routes.js';
 import { restaurantRoutes, restaurantDashboardRoutes } from './restaurant.routes.js';
 import { orderRoutes, orderDashboardRoutes } from './order.routes.js';
+import { driverRoutes } from './driver.routes.js';
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.use('/restaurants', restaurantRoutes);
 router.use('/restaurant', restaurantDashboardRoutes);
 router.use('/restaurant', orderDashboardRoutes);
 router.use('/orders', orderRoutes);
-// router.use('/driver', driverRoutes);
+router.use('/driver', driverRoutes);
 // router.use('/admin', adminRoutes);
 
 export { router };
