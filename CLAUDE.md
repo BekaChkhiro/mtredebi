@@ -16,37 +16,40 @@ Food delivery platform სამტრედიისთვის.
 
 ## მიმდინარე სტატუსი
 - **კვირა:** 1
-- **დღე:** 1
-- **ფაზა:** Setup & Infrastructure
+- **დღე:** 2
+- **ფაზა:** Backend API Development
 
 ## დღევანდელი პროგრესი
-- [x] დოკუმენტაციის შექმნა
-- [x] CLAUDE.md შექმნა
-- [x] Monorepo setup (package.json, turbo.json)
-- [x] Backend boilerplate (Express, Socket.io)
-- [x] Prisma schema (ყველა მოდელი)
-- [x] Shared package (types, constants, utils)
-- [x] npm install
-- [x] Railway PostgreSQL დაკავშირება
-- [x] prisma db push - schema გაგზავნილია
-- [x] სერვერი გაშვებულია (http://localhost:3001)
+- [x] Auth API - ტელეფონით ავტორიზაცია (OTP)
+  - auth.service.ts - OTP გენერაცია, ვერიფიკაცია, JWT
+  - auth.controller.ts - route handlers + validation (Zod)
+  - auth.routes.ts - endpoints
+  - auth.middleware.ts - JWT verification, role-based access
+- [x] ყველა endpoint დატესტილია და მუშაობს
+
+## Auth API Endpoints
+- `POST /api/v1/auth/send-otp` - OTP გაგზავნა (dev: console-ში)
+- `POST /api/v1/auth/verify-otp` - OTP ვერიფიკაცია, JWT token
+- `GET /api/v1/auth/me` - მიმდინარე მომხმარებელი (protected)
+- `PUT /api/v1/auth/me` - პროფილის განახლება (protected)
 
 ## შემდეგი სესიაზე
-Auth API - ტელეფონით ავტორიზაცია (OTP)
-1. auth.service.ts - OTP გენერაცია და შემოწმება
-2. auth.controller.ts - route handlers
-3. auth.routes.ts - endpoints
-4. auth.middleware.ts - JWT verification
+Restaurant API
+1. restaurant.service.ts - რესტორნების CRUD
+2. restaurant.controller.ts - route handlers
+3. restaurant.routes.ts - endpoints
+4. menu.service.ts - მენიუს მართვა
 
 Endpoints:
-- POST /api/v1/auth/send-otp
-- POST /api/v1/auth/verify-otp
-- GET /api/v1/auth/me
+- GET /api/v1/restaurants - ყველა რესტორანი
+- GET /api/v1/restaurants/:id - ერთი რესტორანი მენიუთი
+- POST /api/v1/restaurant/menu - მენიუს დამატება (restaurant admin)
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
 - 2025-01-03: Monorepo setup, Backend boilerplate, Prisma schema
 - 2025-01-03: Database დაკავშირება, სერვერის გაშვება ✅
+- 2026-01-03: Auth API დასრულებული ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)

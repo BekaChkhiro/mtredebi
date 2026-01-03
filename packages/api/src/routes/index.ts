@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { authRoutes } from './auth.routes.js';
 
 const router = Router();
 
@@ -18,8 +19,8 @@ router.get('/', (req, res) => {
   });
 });
 
-// Routes will be added here
-// router.use('/auth', authRoutes);
+// Routes
+router.use('/auth', authRoutes);
 // router.use('/restaurants', restaurantRoutes);
 // router.use('/orders', orderRoutes);
 // router.use('/driver', driverRoutes);
