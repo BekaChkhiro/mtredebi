@@ -152,8 +152,8 @@ export async function verifyOTP(phone: string, code: string): Promise<AuthResult
   };
 
   const token = jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.expiresIn,
-  });
+    expiresIn: config.jwt.expiresIn as string,
+  } as jwt.SignOptions);
 
   return {
     user,

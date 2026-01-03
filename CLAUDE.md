@@ -25,6 +25,10 @@ Food delivery platform სამტრედიისთვის.
   - auth.controller.ts - route handlers + validation (Zod)
   - auth.routes.ts - endpoints
   - auth.middleware.ts - JWT verification, role-based access
+- [x] Restaurant API - რესტორნები და მენიუ
+  - restaurant.service.ts - CRUD + menu management
+  - restaurant.controller.ts - route handlers + validation (Zod)
+  - restaurant.routes.ts - public & restaurant dashboard endpoints
 - [x] ყველა endpoint დატესტილია და მუშაობს
 
 ## Auth API Endpoints
@@ -33,23 +37,37 @@ Food delivery platform სამტრედიისთვის.
 - `GET /api/v1/auth/me` - მიმდინარე მომხმარებელი (protected)
 - `PUT /api/v1/auth/me` - პროფილის განახლება (protected)
 
+## Restaurant API Endpoints
+Public:
+- `GET /api/v1/restaurants` - ყველა რესტორანი (pagination, search)
+- `GET /api/v1/restaurants/:id` - რესტორანი სრული მენიუთი
+
+Restaurant Dashboard (protected - RESTAURANT_ADMIN):
+- `POST /api/v1/restaurant/categories` - კატეგორიის დამატება
+- `PUT /api/v1/restaurant/categories/:id` - კატეგორიის რედაქტირება
+- `DELETE /api/v1/restaurant/categories/:id` - კატეგორიის წაშლა
+- `POST /api/v1/restaurant/menu` - მენიუს item დამატება
+- `PUT /api/v1/restaurant/menu/:id` - მენიუს item რედაქტირება
+- `DELETE /api/v1/restaurant/menu/:id` - მენიუს item წაშლა
+
 ## შემდეგი სესიაზე
-Restaurant API
-1. restaurant.service.ts - რესტორნების CRUD
-2. restaurant.controller.ts - route handlers
-3. restaurant.routes.ts - endpoints
-4. menu.service.ts - მენიუს მართვა
+Order API
+1. order.service.ts - შეკვეთების CRUD
+2. order.controller.ts - route handlers
+3. order.routes.ts - endpoints
 
 Endpoints:
-- GET /api/v1/restaurants - ყველა რესტორანი
-- GET /api/v1/restaurants/:id - ერთი რესტორანი მენიუთი
-- POST /api/v1/restaurant/menu - მენიუს დამატება (restaurant admin)
+- POST /api/v1/orders - შეკვეთის შექმნა
+- GET /api/v1/orders - მომხმარებლის შეკვეთები
+- GET /api/v1/orders/:id - კონკრეტული შეკვეთა
+- PUT /api/v1/restaurant/orders/:id/status - სტატუსის ცვლილება
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
 - 2025-01-03: Monorepo setup, Backend boilerplate, Prisma schema
 - 2025-01-03: Database დაკავშირება, სერვერის გაშვება ✅
 - 2026-01-03: Auth API დასრულებული ✅
+- 2026-01-03: Restaurant API დასრულებული ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)
