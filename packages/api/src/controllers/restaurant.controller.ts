@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import * as restaurantService from '../services/restaurant.service.js';
+import * as uploadService from '../services/upload.service.js';
 
 // ==================== VALIDATION SCHEMAS ====================
 
@@ -334,6 +335,175 @@ export async function deleteMenuItem(req: Request, res: Response): Promise<void>
     res.status(500).json({
       success: false,
       error: { code: 'SERVER_ERROR', message: 'სერვერის შეცდომა' },
+    });
+  }
+}
+
+// ==================== IMAGE UPLOAD ENDPOINTS ====================
+
+// POST /api/v1/restaurant/upload/image
+export async function uploadRestaurantImage(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        error: { code: 'NO_FILE', message: 'სურათი არ არის ატვირთული' },
+      });
+      return;
+    }
+
+    const restaurantId = req.body.restaurantId;
+    if (!restaurantId) {
+      res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_RESTAURANT', message: 'restaurantId სავალდებულოა' },
+      });
+      return;
+    }
+
+    // Get current restaurant to delete old image
+    const restaurant = await restaurantService.getRestaurantById(restaurantId);
+    if (!restaurant) {
+      res.status(404).json({
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'რესტორანი ვერ მოიძებნა' },
+      });
+      return;
+    }
+
+    // Upload new image
+    const { url } = await uploadService.uploadAndReplace(
+      req.file,
+      'restaurants',
+      restaurant.imageUrl
+    );
+
+    // Update restaurant
+    const updatedRestaurant = await restaurantService.updateRestaurant(restaurantId, {
+      imageUrl: url,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        imageUrl: url,
+        restaurant: updatedRestaurant,
+      },
+    });
+  } catch (error) {
+    console.error('uploadRestaurantImage error:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'სურათის ატვირთვა ვერ მოხერხდა' },
+    });
+  }
+}
+
+// POST /api/v1/restaurant/upload/cover
+export async function uploadRestaurantCover(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        error: { code: 'NO_FILE', message: 'სურათი არ არის ატვირთული' },
+      });
+      return;
+    }
+
+    const restaurantId = req.body.restaurantId;
+    if (!restaurantId) {
+      res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_RESTAURANT', message: 'restaurantId სავალდებულოა' },
+      });
+      return;
+    }
+
+    // Get current restaurant to delete old image
+    const restaurant = await restaurantService.getRestaurantById(restaurantId);
+    if (!restaurant) {
+      res.status(404).json({
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'რესტორანი ვერ მოიძებნა' },
+      });
+      return;
+    }
+
+    // Upload new image
+    const { url } = await uploadService.uploadAndReplace(
+      req.file,
+      'restaurants',
+      restaurant.coverImageUrl
+    );
+
+    // Update restaurant
+    const updatedRestaurant = await restaurantService.updateRestaurant(restaurantId, {
+      coverImageUrl: url,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        coverImageUrl: url,
+        restaurant: updatedRestaurant,
+      },
+    });
+  } catch (error) {
+    console.error('uploadRestaurantCover error:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'სურათის ატვირთვა ვერ მოხერხდა' },
+    });
+  }
+}
+
+// POST /api/v1/restaurant/menu/:id/upload
+export async function uploadMenuItemImage(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        error: { code: 'NO_FILE', message: 'სურათი არ არის ატვირთული' },
+      });
+      return;
+    }
+
+    const { id } = req.params;
+
+    // Get current menu item to delete old image
+    const menuItem = await restaurantService.getMenuItemWithRestaurant(id);
+    if (!menuItem) {
+      res.status(404).json({
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'პროდუქტი ვერ მოიძებნა' },
+      });
+      return;
+    }
+
+    // Upload new image
+    const { url } = await uploadService.uploadAndReplace(
+      req.file,
+      'menu-items',
+      menuItem.imageUrl
+    );
+
+    // Update menu item
+    const updatedMenuItem = await restaurantService.updateMenuItem(id, {
+      imageUrl: url,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        imageUrl: url,
+        menuItem: updatedMenuItem,
+      },
+    });
+  } catch (error) {
+    console.error('uploadMenuItemImage error:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'სურათის ატვირთვა ვერ მოხერხდა' },
     });
   }
 }

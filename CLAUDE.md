@@ -16,8 +16,8 @@ Food delivery platform სამტრედიისთვის.
 
 ## მიმდინარე სტატუსი
 - **კვირა:** 1
-- **დღე:** 2
-- **ფაზა:** Backend API Development
+- **დღე:** 3
+- **ფაზა:** Backend API Development (დასრულების პირას)
 
 ## დღევანდელი პროგრესი
 - [x] Auth API - ტელეფონით ავტორიზაცია (OTP)
@@ -44,6 +44,11 @@ Food delivery platform სამტრედიისთვის.
   - Driver location updates (real-time)
   - New order notifications for restaurants
   - Driver assignment notifications
+- [x] Image Upload (Cloudflare R2)
+  - upload.service.ts - R2 client, upload/delete operations
+  - upload.middleware.ts - multer config, file validation
+  - Restaurant image upload endpoints (image, cover)
+  - Menu item image upload endpoint
 
 ## Auth API Endpoints
 - `POST /api/v1/auth/send-otp` - OTP გაგზავნა (dev: console-ში)
@@ -63,6 +68,9 @@ Restaurant Dashboard (protected - RESTAURANT_ADMIN):
 - `POST /api/v1/restaurant/menu` - მენიუს item დამატება
 - `PUT /api/v1/restaurant/menu/:id` - მენიუს item რედაქტირება
 - `DELETE /api/v1/restaurant/menu/:id` - მენიუს item წაშლა
+- `POST /api/v1/restaurant/upload/image` - რესტორნის სურათის ატვირთვა
+- `POST /api/v1/restaurant/upload/cover` - რესტორნის cover სურათის ატვირთვა
+- `POST /api/v1/restaurant/menu/:id/upload` - მენიუს item სურათის ატვირთვა
 
 ## Order API Endpoints
 Customer (protected):
@@ -120,10 +128,11 @@ Rooms:
 - `driver:{driverId}:tracking` - მძღოლის tracking subscribers
 
 ## შემდეგი სესიაზე
-Image Upload (Cloudflare R2)
-1. R2 client setup
-2. Image upload middleware (multer + R2)
-3. Restaurant/Menu item image upload endpoints
+Admin API
+1. Admin dashboard endpoints
+2. Restaurant management (create, update, delete)
+3. User management
+4. Analytics/Reports
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
@@ -134,6 +143,7 @@ Image Upload (Cloudflare R2)
 - 2026-01-03: Order API დასრულებული ✅
 - 2026-01-03: Driver API დასრულებული ✅
 - 2026-01-03: Socket.io Real-time Events დასრულებული ✅
+- 2026-01-03: Image Upload (Cloudflare R2) დასრულებული ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)

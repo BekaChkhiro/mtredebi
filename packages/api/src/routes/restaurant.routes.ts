@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as restaurantController from '../controllers/restaurant.controller.js';
 import { authenticate, requireRestaurantAdmin } from '../middleware/auth.middleware.js';
+import { uploadSingleImage, handleMulterError } from '../middleware/upload.middleware.js';
 
 const router = Router();
 
@@ -26,5 +27,10 @@ dashboardRouter.delete('/categories/:id', authenticate, requireRestaurantAdmin, 
 dashboardRouter.post('/menu', authenticate, requireRestaurantAdmin, restaurantController.addMenuItem);
 dashboardRouter.put('/menu/:id', authenticate, requireRestaurantAdmin, restaurantController.updateMenuItem);
 dashboardRouter.delete('/menu/:id', authenticate, requireRestaurantAdmin, restaurantController.deleteMenuItem);
+
+// Image upload
+dashboardRouter.post('/upload/image', authenticate, requireRestaurantAdmin, uploadSingleImage, handleMulterError, restaurantController.uploadRestaurantImage);
+dashboardRouter.post('/upload/cover', authenticate, requireRestaurantAdmin, uploadSingleImage, handleMulterError, restaurantController.uploadRestaurantCover);
+dashboardRouter.post('/menu/:id/upload', authenticate, requireRestaurantAdmin, uploadSingleImage, handleMulterError, restaurantController.uploadMenuItemImage);
 
 export { router as restaurantRoutes, dashboardRouter as restaurantDashboardRoutes };
