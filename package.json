@@ -1,0 +1,23 @@
+{
+  "name": "mtredebi",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "api": "npm run dev --workspace=@mtredebi/api",
+    "api:build": "npm run build --workspace=@mtredebi/api"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "packageManager": "npm@10.0.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

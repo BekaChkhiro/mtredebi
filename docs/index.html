@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTREDEBI - Development Dashboard</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #6366f1;
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --pending: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-value.secondary {
+            color: var(--secondary);
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid var(--border);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .progress-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .progress-bar-container {
+            background: var(--bg);
+            border-radius: 9999px;
+            height: 24px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 9999px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Weeks Grid */
+        .weeks-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .weeks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .week-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: border-color 0.2s;
+        }
+
+        .week-card:hover {
+            border-color: var(--primary);
+        }
+
+        .week-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+
+        .week-card.completed {
+            border-color: var(--success);
+        }
+
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .week-number {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .week-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .week-status.pending {
+            background: var(--pending);
+            color: white;
+        }
+
+        .week-status.active {
+            background: var(--primary);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .week-status.completed {
+            background: var(--success);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .week-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .week-tasks {
+            list-style: none;
+        }
+
+        .week-task {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .week-task.done {
+            color: var(--success);
+            text-decoration: line-through;
+        }
+
+        .task-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Tech Stack */
+        .tech-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid var(--border);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .tech-item {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.05);
+        }
+
+        .tech-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tech-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .tech-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Docs Links */
+        .docs-section {
+            margin-bottom: 3rem;
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .doc-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg-card);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .doc-link:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .doc-icon {
+            font-size: 1.5rem;
+        }
+
+        .doc-title {
+            font-weight: 600;
+        }
+
+        .doc-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .weeks-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="logo">🚀 MTREDEBI</h1>
+            <p class="subtitle">Food Delivery Platform - Development Dashboard</p>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">კვირა</div>
+                <div class="stat-value">1 / 8</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">პროგრესი</div>
+                <div class="stat-value">0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">დარჩენილი დრო</div>
+                <div class="stat-value secondary">8 კვირა</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">სტატუსი</div>
+                <div class="stat-value" style="font-size: 1.2rem;">🟢 დაწყებული</div>
+            </div>
+        </div>
+
+        <!-- Overall Progress -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <h2 class="progress-title">საერთო პროგრესი</h2>
+                <span class="progress-percentage">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Weeks Plan -->
+        <section class="weeks-section">
+            <h2 class="section-title">📅 კვირების გეგმა</h2>
+            <div class="weeks-grid">
+                <!-- Week 1 -->
+                <div class="week-card active">
+                    <div class="week-header">
+                        <span class="week-number">კვირა 1</span>
+                        <span class="week-status active">აქტიური</span>
+                    </div>
+                    <div class="week-title">Setup & Database</div>
+                    <ul class="week-tasks">
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Monorepo Setup
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Backend Setup
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Database Schema
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Week 2 -->
+                <div class="week-card">
+                    <div class="week-header">
+                        <span class="week-number">კვირა 2</span>
+                        <span class="week-status pending">მომლოდინე</span>
+                    </div>
+                    <div class="week-title">Auth & Core APIs</div>
+                    <ul class="week-tasks">
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            SMS OTP Authentication
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Restaurant APIs
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            JWT & Middleware
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Week 3 -->
+                <div class="week-card">
+                    <div class="week-header">
+                        <span class="week-number">კვირა 3</span>
+                        <span class="week-status pending">მომლოდინე</span>
+                    </div>
+                    <div class="week-title">Customer App (Part 1)</div>
+                    <ul class="week-tasks">
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Expo Setup
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Auth Screens
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Restaurant List
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Week 4 -->
+                <div class="week-card">
+                    <div class="week-header">
+                        <span class="week-number">კვირა 4</span>
+                        <span class="week-status pending">მომლოდინე</span>
+                    </div>
+                    <div class="week-title">Customer App (Part 2)</div>
+                    <ul class="week-tasks">
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Cart & Checkout
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Order Tracking
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Socket.io Integration
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Week 5 -->
+                <div class="week-card">
+                    <div class="week-header">
+                        <span class="week-number">კვირა 5</span>
+                        <span class="week-status pending">მომლოდინე</span>
+                    </div>
+                    <div class="week-title">Driver App</div>
+                    <ul class="week-tasks">
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Order Management
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Maps & Navigation
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Location Tracking
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Week 6 -->
+                <div class="week-card">
+                    <div class="week-header">
+                        <span class="week-number">კვირა 6</span>
+                        <span class="week-status pending">მომლოდინე</span>
+                    </div>
+                    <div class="week-title">Restaurant Dashboard</div>
+                    <ul class="week-tasks">
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Orders Management
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Menu Management
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Real-time Notifications
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Week 7 -->
+                <div class="week-card">
+                    <div class="week-header">
+                        <span class="week-number">კვირა 7</span>
+                        <span class="week-status pending">მომლოდინე</span>
+                    </div>
+                    <div class="week-title">Admin Panel</div>
+                    <ul class="week-tasks">
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Dashboard & Stats
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Entity Management
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Orders Monitoring
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Week 8 -->
+                <div class="week-card">
+                    <div class="week-header">
+                        <span class="week-number">კვირა 8</span>
+                        <span class="week-status pending">მომლოდინე</span>
+                    </div>
+                    <div class="week-title">Testing & Deployment</div>
+                    <ul class="week-tasks">
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            End-to-end Testing
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Production Deploy
+                        </li>
+                        <li class="week-task">
+                            <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            </svg>
+                            Soft Launch
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack -->
+        <section class="tech-section">
+            <h2 class="section-title">🛠 Tech Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-icon">⚛️</div>
+                    <div class="tech-name">React Native</div>
+                    <div class="tech-desc">Mobile Apps</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">▲</div>
+                    <div class="tech-name">Next.js</div>
+                    <div class="tech-desc">Web Apps</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🟢</div>
+                    <div class="tech-name">Node.js</div>
+                    <div class="tech-desc">Backend</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🐘</div>
+                    <div class="tech-name">PostgreSQL</div>
+                    <div class="tech-desc">Database</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🔴</div>
+                    <div class="tech-name">Socket.io</div>
+                    <div class="tech-desc">Real-time</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🗺️</div>
+                    <div class="tech-name">Google Maps</div>
+                    <div class="tech-desc">Maps</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🚂</div>
+                    <div class="tech-name">Railway</div>
+                    <div class="tech-desc">Hosting + DB</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">☁️</div>
+                    <div class="tech-name">Cloudflare R2</div>
+                    <div class="tech-desc">Storage</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">📨</div>
+                    <div class="tech-name">Twilio</div>
+                    <div class="tech-desc">SMS</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation Links -->
+        <section class="docs-section">
+            <h2 class="section-title">📚 დოკუმენტაცია</h2>
+            <div class="docs-grid">
+                <a href="./OVERVIEW.md" class="doc-link">
+                    <span class="doc-icon">📋</span>
+                    <div>
+                        <div class="doc-title">Overview</div>
+                        <div class="doc-desc">პროექტის მიმოხილვა</div>
+                    </div>
+                </a>
+                <a href="./ARCHITECTURE.md" class="doc-link">
+                    <span class="doc-icon">🏗️</span>
+                    <div>
+                        <div class="doc-title">Architecture</div>
+                        <div class="doc-desc">სისტემის არქიტექტურა</div>
+                    </div>
+                </a>
+                <a href="./DATABASE.md" class="doc-link">
+                    <span class="doc-icon">🗄️</span>
+                    <div>
+                        <div class="doc-title">Database</div>
+                        <div class="doc-desc">მონაცემთა ბაზის სქემა</div>
+                    </div>
+                </a>
+                <a href="./API.md" class="doc-link">
+                    <span class="doc-icon">🔌</span>
+                    <div>
+                        <div class="doc-title">API</div>
+                        <div class="doc-desc">API დოკუმენტაცია</div>
+                    </div>
+                </a>
+                <a href="./WEEKLY_PLAN.md" class="doc-link">
+                    <span class="doc-icon">📅</span>
+                    <div>
+                        <div class="doc-title">Weekly Plan</div>
+                        <div class="doc-desc">კვირების გეგმა</div>
+                    </div>
+                </a>
+                <a href="./TECH_STACK.md" class="doc-link">
+                    <span class="doc-icon">🛠️</span>
+                    <div>
+                        <div class="doc-title">Tech Stack</div>
+                        <div class="doc-desc">ტექნოლოგიები</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>MTREDEBI &copy; 2024 | Built with ❤️ for სამტრედია</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="https://github.com" target="_blank">GitHub</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // This script can be used to dynamically update progress
+        // For now, it's static - update manually as you progress
+
+        function updateProgress(percentage) {
+            const progressBar = document.querySelector('.progress-bar');
+            const progressText = document.querySelector('.progress-percentage');
+            const statValue = document.querySelectorAll('.stat-value')[1];
+
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = percentage + '%';
+            statValue.textContent = percentage + '%';
+        }
+
+        function updateWeek(weekNumber) {
+            const weekCards = document.querySelectorAll('.week-card');
+            const statValue = document.querySelectorAll('.stat-value')[0];
+
+            statValue.textContent = weekNumber + ' / 8';
+
+            weekCards.forEach((card, index) => {
+                const status = card.querySelector('.week-status');
+                card.classList.remove('active', 'completed');
+
+                if (index + 1 < weekNumber) {
+                    card.classList.add('completed');
+                    status.className = 'week-status completed';
+                    status.textContent = 'დასრულებული';
+                } else if (index + 1 === weekNumber) {
+                    card.classList.add('active');
+                    status.className = 'week-status active';
+                    status.textContent = 'აქტიური';
+                } else {
+                    status.className = 'week-status pending';
+                    status.textContent = 'მომლოდინე';
+                }
+            });
+        }
+
+        // Example: To update progress, call:
+        // updateProgress(25);
+        // updateWeek(2);
+    </script>
+</body>
+</html>
