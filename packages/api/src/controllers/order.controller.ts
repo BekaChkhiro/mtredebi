@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { OrderStatus } from '@prisma/client';
 import * as orderService from '../services/order.service.js';
+import { emitNewOrder, emitOrderUpdate, emitOrderReady } from '../socket/index.js';
 
 // ==================== VALIDATION SCHEMAS ====================
 
@@ -50,6 +51,9 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
 
     const customerId = req.user!.id;
     const order = await orderService.createOrder(customerId, validation.data);
+
+    // Emit new order to restaurant via socket
+    emitNewOrder(order.restaurantId, order);
 
     res.status(201).json({
       success: true,
@@ -166,6 +170,9 @@ export async function cancelOrder(req: Request, res: Response): Promise<void> {
       return;
     }
 
+    // Emit order cancellation via socket
+    emitOrderUpdate(id, order);
+
     res.json({
       success: true,
       data: { order },
@@ -265,6 +272,14 @@ export async function updateOrderStatus(req: Request, res: Response): Promise<vo
         error: { code: 'NOT_FOUND', message: 'შეკვეთა ვერ მოიძებნა' },
       });
       return;
+    }
+
+    // Emit order status update via socket
+    emitOrderUpdate(id, order);
+
+    // If order is READY, notify all available drivers
+    if (validation.data.status === 'READY') {
+      emitOrderReady(order);
     }
 
     res.json({

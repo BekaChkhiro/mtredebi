@@ -38,6 +38,12 @@ Food delivery platform სამტრედიისთვის.
   - driver.service.ts - status, location, order management
   - driver.controller.ts - route handlers + validation (Zod)
   - driver.routes.ts - driver endpoints
+- [x] Socket.io Real-time Events
+  - socket/index.ts - JWT auth, room management, event handlers
+  - Order status updates broadcasting
+  - Driver location updates (real-time)
+  - New order notifications for restaurants
+  - Driver assignment notifications
 
 ## Auth API Endpoints
 - `POST /api/v1/auth/send-otp` - OTP გაგზავნა (dev: console-ში)
@@ -85,12 +91,39 @@ Driver (protected - DRIVER):
 - `PUT /api/v1/driver/orders/:id/delivering` - მიტანა დაიწყო
 - `PUT /api/v1/driver/orders/:id/delivered` - მიტანილი
 
+## Socket.io Events
+
+Connection:
+- `connect` with `auth: { token }` - JWT authentication
+- Auto-join rooms based on role (customer, driver, restaurant)
+
+Client Events (emit):
+- `join:order` (orderId) - შეკვეთის ოთახში შესვლა tracking-ისთვის
+- `leave:order` (orderId) - შეკვეთის ოთახიდან გასვლა
+- `driver:location` ({ lat, lng, orderId? }) - მძღოლის ლოკაციის განახლება
+- `track:driver` (driverId) - მძღოლის tracking-ის დაწყება
+- `untrack:driver` (driverId) - მძღოლის tracking-ის შეწყვეტა
+
+Server Events (listen):
+- `order:new` - ახალი შეკვეთა (რესტორანი)
+- `order:updated` - შეკვეთის სტატუსის ცვლილება
+- `order:ready` - შეკვეთა მზადაა (მძღოლები)
+- `driver:assigned` - მძღოლი მიენიჭა შეკვეთას
+- `driver:location` - მძღოლის ლოკაცია (tracking)
+
+Rooms:
+- `customer:{userId}` - კლიენტის პირადი ოთახი
+- `restaurant:{restaurantId}` - რესტორნის ოთახი
+- `driver:{userId}` - მძღოლის პირადი ოთახი
+- `drivers` - ყველა online მძღოლი
+- `order:{orderId}` - კონკრეტული შეკვეთის ოთახი
+- `driver:{driverId}:tracking` - მძღოლის tracking subscribers
+
 ## შემდეგი სესიაზე
-Socket.io Real-time Events
-1. socket/index.ts - connection handling
-2. Order status updates broadcasting
-3. Driver location updates
-4. New order notifications for restaurants
+Image Upload (Cloudflare R2)
+1. R2 client setup
+2. Image upload middleware (multer + R2)
+3. Restaurant/Menu item image upload endpoints
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
@@ -100,6 +133,7 @@ Socket.io Real-time Events
 - 2026-01-03: Restaurant API დასრულებული ✅
 - 2026-01-03: Order API დასრულებული ✅
 - 2026-01-03: Driver API დასრულებული ✅
+- 2026-01-03: Socket.io Real-time Events დასრულებული ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)

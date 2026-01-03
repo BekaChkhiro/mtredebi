@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import * as driverService from '../services/driver.service.js';
+import { emitOrderUpdate, emitDriverAssigned } from '../socket/index.js';
 
 // ==================== VALIDATION SCHEMAS ====================
 
@@ -165,6 +166,13 @@ export async function acceptOrder(req: Request, res: Response): Promise<void> {
     const userId = req.user!.id;
     const order = await driverService.acceptOrder(userId, id);
 
+    // Get driver info for socket event
+    const driver = await driverService.getOrCreateDriver(userId);
+
+    // Emit driver assigned event
+    emitDriverAssigned(id, driver);
+    emitOrderUpdate(id, order);
+
     res.json({
       success: true,
       data: { order },
@@ -200,6 +208,9 @@ export async function pickUpOrder(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const userId = req.user!.id;
     const order = await driverService.pickUpOrder(userId, id);
+
+    // Emit order update via socket
+    emitOrderUpdate(id, order);
 
     res.json({
       success: true,
@@ -237,6 +248,9 @@ export async function startDelivering(req: Request, res: Response): Promise<void
     const userId = req.user!.id;
     const order = await driverService.startDelivering(userId, id);
 
+    // Emit order update via socket
+    emitOrderUpdate(id, order);
+
     res.json({
       success: true,
       data: { order },
@@ -272,6 +286,9 @@ export async function deliverOrder(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const userId = req.user!.id;
     const order = await driverService.deliverOrder(userId, id);
+
+    // Emit order update via socket
+    emitOrderUpdate(id, order);
 
     res.json({
       success: true,
