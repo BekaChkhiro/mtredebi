@@ -17,7 +17,7 @@ Food delivery platform სამტრედიისთვის.
 ## მიმდინარე სტატუსი
 - **კვირა:** 1
 - **დღე:** 3
-- **ფაზა:** Backend API Development (დასრულების პირას)
+- **ფაზა:** Backend API Development ✅ (დასრულებული)
 
 ## დღევანდელი პროგრესი
 - [x] Auth API - ტელეფონით ავტორიზაცია (OTP)
@@ -49,6 +49,10 @@ Food delivery platform სამტრედიისთვის.
   - upload.middleware.ts - multer config, file validation
   - Restaurant image upload endpoints (image, cover)
   - Menu item image upload endpoint
+- [x] Admin API - ადმინისტრირება
+  - admin.service.ts - dashboard stats, CRUD operations, analytics
+  - admin.controller.ts - route handlers + validation (Zod)
+  - admin.routes.ts - admin panel endpoints
 
 ## Auth API Endpoints
 - `POST /api/v1/auth/send-otp` - OTP გაგზავნა (dev: console-ში)
@@ -127,12 +131,42 @@ Rooms:
 - `order:{orderId}` - კონკრეტული შეკვეთის ოთახი
 - `driver:{driverId}:tracking` - მძღოლის tracking subscribers
 
+## Admin API Endpoints
+Admin (protected - ADMIN):
+
+Dashboard:
+- `GET /api/v1/admin/dashboard` - სტატისტიკა (users, orders, revenue)
+
+User Management:
+- `GET /api/v1/admin/users` - მომხმარებლების სია (pagination, role filter, search)
+- `GET /api/v1/admin/users/:id` - კონკრეტული მომხმარებელი
+- `PUT /api/v1/admin/users/:id` - მომხმარებლის რედაქტირება (role, status)
+
+Restaurant Management:
+- `GET /api/v1/admin/restaurants` - რესტორნების სია (pagination, search)
+- `POST /api/v1/admin/restaurants` - ახალი რესტორანი
+- `PUT /api/v1/admin/restaurants/:id` - რესტორნის რედაქტირება
+- `DELETE /api/v1/admin/restaurants/:id` - რესტორნის წაშლა
+
+Driver Management:
+- `GET /api/v1/admin/drivers` - მძღოლების სია (pagination, filters)
+- `POST /api/v1/admin/drivers` - ახალი მძღოლი
+- `PUT /api/v1/admin/drivers/:id` - მძღოლის რედაქტირება
+
+Order Management:
+- `GET /api/v1/admin/orders` - შეკვეთების სია (pagination, filters)
+
+Analytics:
+- `GET /api/v1/admin/analytics/revenue` - შემოსავლის ანალიტიკა (date range)
+- `GET /api/v1/admin/analytics/orders` - შეკვეთების ანალიტიკა (by status, by hour)
+- `GET /api/v1/admin/analytics/top-restaurants` - ტოპ რესტორნები
+
 ## შემდეგი სესიაზე
-Admin API
-1. Admin dashboard endpoints
-2. Restaurant management (create, update, delete)
-3. User management
-4. Analytics/Reports
+Backend API დასრულებულია! შემდეგი ნაბიჯები:
+1. Frontend - Customer Mobile App (React Native + Expo)
+2. Restaurant Dashboard (Next.js)
+3. Driver Mobile App (React Native + Expo)
+4. Admin Panel (Next.js)
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
@@ -144,6 +178,7 @@ Admin API
 - 2026-01-03: Driver API დასრულებული ✅
 - 2026-01-03: Socket.io Real-time Events დასრულებული ✅
 - 2026-01-03: Image Upload (Cloudflare R2) დასრულებული ✅
+- 2026-01-03: Admin API დასრულებული ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)

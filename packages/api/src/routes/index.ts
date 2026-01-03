@@ -3,6 +3,7 @@ import { authRoutes } from './auth.routes.js';
 import { restaurantRoutes, restaurantDashboardRoutes } from './restaurant.routes.js';
 import { orderRoutes, orderDashboardRoutes } from './order.routes.js';
 import { driverRoutes } from './driver.routes.js';
+import { adminRoutes } from './admin.routes.js';
 
 const router = Router();
 
@@ -29,6 +30,6 @@ router.use('/restaurant', restaurantDashboardRoutes);
 router.use('/restaurant', orderDashboardRoutes);
 router.use('/orders', orderRoutes);
 router.use('/driver', driverRoutes);
-// router.use('/admin', adminRoutes);
+router.use('/admin', adminRoutes);
 
 export { router };
