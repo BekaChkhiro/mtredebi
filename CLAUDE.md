@@ -29,6 +29,10 @@ Food delivery platform სამტრედიისთვის.
   - restaurant.service.ts - CRUD + menu management
   - restaurant.controller.ts - route handlers + validation (Zod)
   - restaurant.routes.ts - public & restaurant dashboard endpoints
+- [x] Order API - შეკვეთების მართვა
+  - order.service.ts - CRUD, status transitions, validation
+  - order.controller.ts - route handlers + validation (Zod)
+  - order.routes.ts - customer & restaurant dashboard endpoints
 - [x] ყველა endpoint დატესტილია და მუშაობს
 
 ## Auth API Endpoints
@@ -50,17 +54,34 @@ Restaurant Dashboard (protected - RESTAURANT_ADMIN):
 - `PUT /api/v1/restaurant/menu/:id` - მენიუს item რედაქტირება
 - `DELETE /api/v1/restaurant/menu/:id` - მენიუს item წაშლა
 
+## Order API Endpoints
+Customer (protected):
+- `POST /api/v1/orders` - შეკვეთის შექმნა
+- `GET /api/v1/orders` - მომხმარებლის შეკვეთები (pagination, status filter)
+- `GET /api/v1/orders/:id` - კონკრეტული შეკვეთა
+- `PUT /api/v1/orders/:id/cancel` - შეკვეთის გაუქმება (მხოლოდ PENDING)
+
+Restaurant Dashboard (protected - RESTAURANT_ADMIN):
+- `GET /api/v1/restaurant/orders` - რესტორნის შეკვეთები
+- `PUT /api/v1/restaurant/orders/:id/status` - სტატუსის ცვლილება
+
+Order Status Flow:
+PENDING → ACCEPTED → PREPARING → READY → DRIVER_ASSIGNED → PICKED_UP → DELIVERING → DELIVERED
+(ნებისმიერ ეტაპზე შესაძლებელია CANCELLED)
+
 ## შემდეგი სესიაზე
-Order API
-1. order.service.ts - შეკვეთების CRUD
-2. order.controller.ts - route handlers
-3. order.routes.ts - endpoints
+Driver API
+1. driver.service.ts - მძღოლის ფუნქციონალი
+2. driver.controller.ts - route handlers
+3. driver.routes.ts - endpoints
 
 Endpoints:
-- POST /api/v1/orders - შეკვეთის შექმნა
-- GET /api/v1/orders - მომხმარებლის შეკვეთები
-- GET /api/v1/orders/:id - კონკრეტული შეკვეთა
-- PUT /api/v1/restaurant/orders/:id/status - სტატუსის ცვლილება
+- PUT /api/v1/driver/status - ონლაინ/ოფლაინ სტატუსი
+- PUT /api/v1/driver/location - ლოკაციის განახლება
+- GET /api/v1/driver/orders - ხელმისაწვდომი შეკვეთები
+- POST /api/v1/driver/orders/:id/accept - შეკვეთის მიღება
+- PUT /api/v1/driver/orders/:id/picked-up - შეკვეთა აიღო
+- PUT /api/v1/driver/orders/:id/delivered - მიტანილი
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
@@ -68,6 +89,7 @@ Endpoints:
 - 2025-01-03: Database დაკავშირება, სერვერის გაშვება ✅
 - 2026-01-03: Auth API დასრულებული ✅
 - 2026-01-03: Restaurant API დასრულებული ✅
+- 2026-01-03: Order API დასრულებული ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)

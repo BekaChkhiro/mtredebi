@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authRoutes } from './auth.routes.js';
 import { restaurantRoutes, restaurantDashboardRoutes } from './restaurant.routes.js';
+import { orderRoutes, orderDashboardRoutes } from './order.routes.js';
 
 const router = Router();
 
@@ -24,7 +25,8 @@ router.get('/', (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/restaurants', restaurantRoutes);
 router.use('/restaurant', restaurantDashboardRoutes);
-// router.use('/orders', orderRoutes);
+router.use('/restaurant', orderDashboardRoutes);
+router.use('/orders', orderRoutes);
 // router.use('/driver', driverRoutes);
 // router.use('/admin', adminRoutes);
 
