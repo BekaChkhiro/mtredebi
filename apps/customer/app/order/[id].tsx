@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,10 @@ import {
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useOrder, useCancelOrder } from "@/hooks/useOrders";
+import { useOrderSocket } from "@/hooks/useSocket";
 import { ORDER_STATUS_LABELS } from "@mtredebi/shared";
-import { Check, AlertCircle, Bike, MapPin, XCircle, UtensilsCrossed, Phone } from "lucide-react-native";
+import { Check, AlertCircle, Bike, MapPin, XCircle, UtensilsCrossed, Phone, Radio } from "lucide-react-native";
+import { DriverMap } from "@/components/DriverMap";
 
 interface OrderItem {
   id: string;
@@ -135,8 +137,25 @@ export default function OrderScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isLoading, isError, refetch } = useOrder(id);
   const cancelOrder = useCancelOrder();
+  const { socket, driverLocation } = useOrderSocket(id);
+  const [isConnected, setIsConnected] = useState(false);
 
-  // TODO: Add socket connection for real-time updates
+  // Track socket connection status
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleConnect = () => setIsConnected(true);
+    const handleDisconnect = () => setIsConnected(false);
+
+    setIsConnected(socket.connected);
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
+    };
+  }, [socket]);
 
   if (isLoading) {
     return (
@@ -209,7 +228,15 @@ export default function OrderScreen() {
           <Text className="text-lg font-semibold text-gray-900">
             {order.orderNumber}
           </Text>
-          <Text className="text-sm text-gray-500">{formatDate(order.createdAt)}</Text>
+          <View className="flex-row items-center">
+            {isConnected && (
+              <View className="flex-row items-center bg-green-50 px-2 py-1 rounded-full mr-2">
+                <Radio size={10} color="#10b981" strokeWidth={3} />
+                <Text className="text-xs text-green-600 font-medium ml-1">Live</Text>
+              </View>
+            )}
+            <Text className="text-sm text-gray-500">{formatDate(order.createdAt)}</Text>
+          </View>
         </View>
         <View className="flex-row items-center">
           <UtensilsCrossed size={16} color="#6B7280" strokeWidth={2} />
@@ -239,6 +266,14 @@ export default function OrderScreen() {
             </View>
           </View>
         </View>
+      )}
+
+      {/* Driver location map - shown when order is being delivered */}
+      {order.driver && ["PICKED_UP", "DELIVERING"].includes(order.status) && (
+        <DriverMap
+          driverLocation={driverLocation}
+          deliveryAddress={order.deliveryAddress}
+        />
       )}
 
       <View className="bg-white rounded-2xl p-4 mb-4">

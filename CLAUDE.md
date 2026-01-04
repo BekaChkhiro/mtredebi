@@ -182,6 +182,13 @@ React Native + Expo customer app. Tech Stack:
 ### შექმნილი Stores & Hooks:
 - `src/store/auth.store.ts` - JWT + User state
 - `src/store/cart.store.ts` - Cart management
+- `src/hooks/useSocket.ts` - Socket.io connection & real-time updates
+
+### შექმნილი Components:
+- `src/components/SocketProvider.tsx` - Socket connection provider
+- `src/components/DriverMap.tsx` - Driver location map (react-native-maps)
+
+### API & Hooks:
 - `src/api/` - API client + endpoints
 - `src/hooks/` - React Query hooks
 
@@ -192,8 +199,8 @@ cd apps/customer && npm run dev
 
 ## შემდეგი სესიაზე
 Customer App-ის დარჩენილი ნაბიჯები:
-1. Socket.io real-time integration
-2. Driver location tracking on map
+1. ~~Socket.io real-time integration~~ ✅
+2. ~~Driver location tracking on map~~ ✅
 3. Push notifications setup
 
 შემდეგი apps:
@@ -212,7 +219,8 @@ Customer App-ის დარჩენილი ნაბიჯები:
 - 2026-01-03: Socket.io Real-time Events დასრულებული ✅
 - 2026-01-03: Image Upload (Cloudflare R2) დასრულებული ✅
 - 2026-01-03: Admin API დასრულებული ✅
-- 2026-01-04: Customer Mobile App - project setup, screens, stores 🚧
+- 2026-01-04: Customer Mobile App - project setup, screens, stores
+- 2026-01-04: Socket.io real-time integration + Driver location tracking ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)
