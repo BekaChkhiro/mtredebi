@@ -16,8 +16,8 @@ Food delivery platform სამტრედიისთვის.
 
 ## მიმდინარე სტატუსი
 - **კვირა:** 1
-- **დღე:** 3
-- **ფაზა:** Backend API Development ✅ (დასრულებული)
+- **დღე:** 4
+- **ფაზა:** Customer Mobile App Development 🚧 (მიმდინარე)
 
 ## დღევანდელი პროგრესი
 - [x] Auth API - ტელეფონით ავტორიზაცია (OTP)
@@ -161,12 +161,45 @@ Analytics:
 - `GET /api/v1/admin/analytics/orders` - შეკვეთების ანალიტიკა (by status, by hour)
 - `GET /api/v1/admin/analytics/top-restaurants` - ტოპ რესტორნები
 
+## Customer Mobile App (apps/customer/)
+React Native + Expo customer app. Tech Stack:
+- **Navigation:** Expo Router (file-based)
+- **State:** Zustand + React Query
+- **Styling:** NativeWind (Tailwind CSS)
+- **Real-time:** Socket.io-client
+
+### შექმნილი Screens:
+- `app/(auth)/phone.tsx` - ტელეფონის შეყვანა
+- `app/(auth)/otp.tsx` - OTP ვერიფიკაცია
+- `app/(tabs)/index.tsx` - მთავარი (რესტორნები)
+- `app/(tabs)/orders.tsx` - შეკვეთების ისტორია
+- `app/(tabs)/profile.tsx` - პროფილი
+- `app/restaurant/[id].tsx` - რესტორნის მენიუ
+- `app/cart.tsx` - კალათა
+- `app/checkout.tsx` - შეკვეთის გაფორმება
+- `app/order/[id].tsx` - შეკვეთის თვალყურისდევნება
+
+### შექმნილი Stores & Hooks:
+- `src/store/auth.store.ts` - JWT + User state
+- `src/store/cart.store.ts` - Cart management
+- `src/api/` - API client + endpoints
+- `src/hooks/` - React Query hooks
+
+### გაშვება:
+```bash
+cd apps/customer && npm run dev
+```
+
 ## შემდეგი სესიაზე
-Backend API დასრულებულია! შემდეგი ნაბიჯები:
-1. Frontend - Customer Mobile App (React Native + Expo)
-2. Restaurant Dashboard (Next.js)
-3. Driver Mobile App (React Native + Expo)
-4. Admin Panel (Next.js)
+Customer App-ის დარჩენილი ნაბიჯები:
+1. Socket.io real-time integration
+2. Driver location tracking on map
+3. Push notifications setup
+
+შემდეგი apps:
+1. Restaurant Dashboard (Next.js)
+2. Driver Mobile App (React Native + Expo)
+3. Admin Panel (Next.js)
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
@@ -179,6 +212,7 @@ Backend API დასრულებულია! შემდეგი ნა�
 - 2026-01-03: Socket.io Real-time Events დასრულებული ✅
 - 2026-01-03: Image Upload (Cloudflare R2) დასრულებული ✅
 - 2026-01-03: Admin API დასრულებული ✅
+- 2026-01-04: Customer Mobile App - project setup, screens, stores 🚧
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)

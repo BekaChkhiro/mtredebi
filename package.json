@@ -19,5 +19,8 @@
   "packageManager": "npm@10.0.0",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "react-native-web": "~0.19.13"
   }
 }
