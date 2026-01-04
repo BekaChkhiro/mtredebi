@@ -19,6 +19,10 @@ const updateProfileSchema = z.object({
   name: z.string().min(2, 'სახელი ძალიან მოკლეა').max(50).optional(),
 });
 
+const pushTokenSchema = z.object({
+  pushToken: z.string().min(1).max(200),
+});
+
 // POST /api/v1/auth/send-otp
 export async function sendOTP(req: Request, res: Response): Promise<void> {
   try {
@@ -190,6 +194,45 @@ export async function updateMe(req: Request, res: Response): Promise<void> {
     });
   } catch (error) {
     console.error('updateMe error:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'სერვერის შეცდომა' },
+    });
+  }
+}
+
+// PUT /api/v1/auth/push-token
+export async function updatePushToken(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'ავტორიზაცია საჭიროა' },
+      });
+      return;
+    }
+
+    const validation = pushTokenSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: validation.error.errors[0].message,
+        },
+      });
+      return;
+    }
+
+    await authService.updatePushToken(req.user.id, validation.data.pushToken);
+
+    res.json({
+      success: true,
+      data: { message: 'Push token updated' },
+    });
+  } catch (error) {
+    console.error('updatePushToken error:', error);
     res.status(500).json({
       success: false,
       error: { code: 'SERVER_ERROR', message: 'სერვერის შეცდომა' },

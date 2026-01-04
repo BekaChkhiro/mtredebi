@@ -1,4 +1,5 @@
 import { PrismaClient, Order, OrderStatus, OrderItem } from '@prisma/client';
+import * as notificationService from './notification.service.js';
 
 const prisma = new PrismaClient();
 
@@ -298,13 +299,27 @@ export async function updateOrderStatus(
       break;
   }
 
-  return prisma.order.update({
+  const updatedOrder = await prisma.order.update({
     where: { id: orderId },
     data: {
       status: newStatus,
       ...timestampUpdates,
     },
   });
+
+  // Send push notification to customer
+  notificationService.notifyOrderStatusChange(orderId, newStatus).catch((err) => {
+    console.error('[Order] Failed to send status notification:', err);
+  });
+
+  // Notify drivers when order is ready
+  if (newStatus === 'READY') {
+    notificationService.notifyDriversOrderReady(orderId).catch((err) => {
+      console.error('[Order] Failed to notify drivers:', err);
+    });
+  }
+
+  return updatedOrder;
 }
 
 // Assign driver to order

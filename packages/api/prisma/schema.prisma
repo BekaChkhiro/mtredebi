@@ -14,6 +14,7 @@ model User {
   phone     String   @unique
   name      String?
   avatarUrl String?  @map("avatar_url")
+  pushToken String?  @map("push_token")
   role      UserRole @default(CUSTOMER)
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")

@@ -192,6 +192,17 @@ export async function updateUser(
   });
 }
 
+// Update push token
+export async function updatePushToken(
+  userId: string,
+  pushToken: string | null
+): Promise<User | null> {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { pushToken },
+  });
+}
+
 // Clean up expired OTPs (can be called periodically)
 export async function cleanupExpiredOTPs(): Promise<number> {
   const result = await prisma.oTP.deleteMany({

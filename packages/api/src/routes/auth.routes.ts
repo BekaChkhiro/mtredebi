@@ -11,5 +11,6 @@ router.post('/verify-otp', authController.verifyOTP);
 // Protected routes
 router.get('/me', authenticate, authController.getMe);
 router.put('/me', authenticate, authController.updateMe);
+router.put('/push-token', authenticate, authController.updatePushToken);
 
 export { router as authRoutes };

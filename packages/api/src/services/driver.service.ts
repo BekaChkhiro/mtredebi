@@ -1,4 +1,5 @@
 import { PrismaClient, Driver, Order, OrderStatus } from '@prisma/client';
+import * as notificationService from './notification.service.js';
 
 const prisma = new PrismaClient();
 
@@ -162,13 +163,28 @@ export async function acceptOrder(
     data: { isAvailable: false },
   });
 
-  return prisma.order.update({
+  const updatedOrder = await prisma.order.update({
     where: { id: orderId },
     data: {
       driverId: driver.id,
       status: 'DRIVER_ASSIGNED',
     },
+    include: {
+      driver: {
+        include: {
+          user: { select: { name: true } },
+        },
+      },
+    },
   });
+
+  // Notify customer about driver assignment
+  const driverName = updatedOrder.driver?.user.name || 'კურიერი';
+  notificationService.notifyDriverAssigned(orderId, driverName).catch((err) => {
+    console.error('[Driver] Failed to send assignment notification:', err);
+  });
+
+  return updatedOrder;
 }
 
 // Mark order as picked up
@@ -195,13 +211,20 @@ export async function pickUpOrder(
     throw new Error('INVALID_STATUS');
   }
 
-  return prisma.order.update({
+  const updatedOrder = await prisma.order.update({
     where: { id: orderId },
     data: {
       status: 'PICKED_UP',
       pickedUpAt: new Date(),
     },
   });
+
+  // Notify customer
+  notificationService.notifyOrderStatusChange(orderId, 'PICKED_UP').catch((err) => {
+    console.error('[Driver] Failed to send pickup notification:', err);
+  });
+
+  return updatedOrder;
 }
 
 // Mark order as delivering
@@ -228,12 +251,19 @@ export async function startDelivering(
     throw new Error('INVALID_STATUS');
   }
 
-  return prisma.order.update({
+  const updatedOrder = await prisma.order.update({
     where: { id: orderId },
     data: {
       status: 'DELIVERING',
     },
   });
+
+  // Notify customer
+  notificationService.notifyOrderStatusChange(orderId, 'DELIVERING').catch((err) => {
+    console.error('[Driver] Failed to send delivering notification:', err);
+  });
+
+  return updatedOrder;
 }
 
 // Mark order as delivered
@@ -266,11 +296,18 @@ export async function deliverOrder(
     data: { isAvailable: true },
   });
 
-  return prisma.order.update({
+  const updatedOrder = await prisma.order.update({
     where: { id: orderId },
     data: {
       status: 'DELIVERED',
       deliveredAt: new Date(),
     },
   });
+
+  // Notify customer
+  notificationService.notifyOrderStatusChange(orderId, 'DELIVERED').catch((err) => {
+    console.error('[Driver] Failed to send delivery notification:', err);
+  });
+
+  return updatedOrder;
 }

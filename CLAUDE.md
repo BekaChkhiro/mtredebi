@@ -59,6 +59,7 @@ Food delivery platform სამტრედიისთვის.
 - `POST /api/v1/auth/verify-otp` - OTP ვერიფიკაცია, JWT token
 - `GET /api/v1/auth/me` - მიმდინარე მომხმარებელი (protected)
 - `PUT /api/v1/auth/me` - პროფილის განახლება (protected)
+- `PUT /api/v1/auth/push-token` - Push token შენახვა (protected)
 
 ## Restaurant API Endpoints
 Public:
@@ -131,6 +132,19 @@ Rooms:
 - `order:{orderId}` - კონკრეტული შეკვეთის ოთახი
 - `driver:{driverId}:tracking` - მძღოლის tracking subscribers
 
+## Push Notifications (Expo)
+Backend-ში notification.service.ts:
+- Order status changes → customer notification
+- Driver assignment → customer notification
+- Order ready → online drivers notification
+
+Customer App-ში:
+- expo-notifications + expo-device
+- useNotifications hook - permission, token registration
+- NotificationProvider - initialization
+
+შეტყობინებები ქართულად (ACCEPTED, PREPARING, READY, PICKED_UP, DELIVERING, DELIVERED, CANCELLED)
+
 ## Admin API Endpoints
 Admin (protected - ADMIN):
 
@@ -183,9 +197,11 @@ React Native + Expo customer app. Tech Stack:
 - `src/store/auth.store.ts` - JWT + User state
 - `src/store/cart.store.ts` - Cart management
 - `src/hooks/useSocket.ts` - Socket.io connection & real-time updates
+- `src/hooks/useNotifications.ts` - Expo Push Notifications
 
 ### შექმნილი Components:
 - `src/components/SocketProvider.tsx` - Socket connection provider
+- `src/components/NotificationProvider.tsx` - Push notifications provider
 - `src/components/DriverMap.tsx` - Driver location map (react-native-maps)
 
 ### API & Hooks:
@@ -198,10 +214,7 @@ cd apps/customer && npm run dev
 ```
 
 ## შემდეგი სესიაზე
-Customer App-ის დარჩენილი ნაბიჯები:
-1. ~~Socket.io real-time integration~~ ✅
-2. ~~Driver location tracking on map~~ ✅
-3. Push notifications setup
+Customer App დასრულებულია! ✅
 
 შემდეგი apps:
 1. Restaurant Dashboard (Next.js)
@@ -221,6 +234,7 @@ Customer App-ის დარჩენილი ნაბიჯები:
 - 2026-01-03: Admin API დასრულებული ✅
 - 2026-01-04: Customer Mobile App - project setup, screens, stores
 - 2026-01-04: Socket.io real-time integration + Driver location tracking ✅
+- 2026-01-04: Push Notifications (Expo) + Backend notification service ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)
