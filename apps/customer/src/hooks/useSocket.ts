@@ -1,16 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "@/store/auth.store";
-import { SOCKET_URL } from "@/constants/api";
-
-let socketInstance: Socket | null = null;
-
-interface OrderUpdateEvent {
-  orderId: string;
-  status: string;
-  updatedAt: string;
-}
+import { getSocket } from "@/components/SocketProvider";
 
 interface DriverLocationEvent {
   driverId: string;
@@ -19,74 +10,8 @@ interface DriverLocationEvent {
   orderId?: string;
 }
 
-interface DriverAssignedEvent {
-  orderId: string;
-  driver: {
-    id: string;
-    name: string;
-    phone: string;
-  };
-}
-
-export function useSocket() {
-  const { token, isAuthenticated } = useAuthStore();
-  const queryClient = useQueryClient();
-  const isConnecting = useRef(false);
-
-  useEffect(() => {
-    if (!isAuthenticated || !token || isConnecting.current) return;
-
-    if (socketInstance?.connected) return;
-
-    isConnecting.current = true;
-
-    socketInstance = io(SOCKET_URL, {
-      auth: { token },
-      transports: ["websocket"],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-
-    socketInstance.on("connect", () => {
-      console.log("[Socket] Connected");
-      isConnecting.current = false;
-    });
-
-    socketInstance.on("disconnect", (reason) => {
-      console.log("[Socket] Disconnected:", reason);
-    });
-
-    socketInstance.on("connect_error", (error) => {
-      console.log("[Socket] Connection error:", error.message);
-      isConnecting.current = false;
-    });
-
-    // Listen for order updates
-    socketInstance.on("order:updated", (data: OrderUpdateEvent) => {
-      console.log("[Socket] Order updated:", data);
-      // Invalidate specific order query
-      queryClient.invalidateQueries({ queryKey: ["order", data.orderId] });
-      // Invalidate orders list
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-    });
-
-    // Listen for driver assignment
-    socketInstance.on("driver:assigned", (data: DriverAssignedEvent) => {
-      console.log("[Socket] Driver assigned:", data);
-      queryClient.invalidateQueries({ queryKey: ["order", data.orderId] });
-    });
-
-    return () => {
-      if (socketInstance) {
-        socketInstance.disconnect();
-        socketInstance = null;
-        isConnecting.current = false;
-      }
-    };
-  }, [isAuthenticated, token, queryClient]);
-
-  return socketInstance;
+export function useSocket(): Socket | null {
+  return getSocket();
 }
 
 export function useOrderSocket(orderId: string | undefined) {
@@ -168,8 +93,4 @@ export function useDriverTracking(driverId: string | undefined) {
   }, [socket, driverId, queryClient]);
 
   return queryClient.getQueryData<DriverLocationEvent>(["driver-location", driverId]);
-}
-
-export function getSocket(): Socket | null {
-  return socketInstance;
 }

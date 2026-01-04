@@ -6,6 +6,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
+import { SocketProvider } from "@/components/SocketProvider";
+import { NotificationProvider } from "@/components/NotificationProvider";
 import "../src/global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -22,33 +24,11 @@ function RootLayoutNav() {
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
-          name="restaurant/[id]"
-          options={{
-            headerShown: true,
-            headerTitle: "",
-            headerTransparent: true,
-          }}
-        />
-        <Stack.Screen
-          name="cart"
-          options={{
-            presentation: "modal",
-            headerShown: true,
-            headerTitle: "კალათა",
-          }}
-        />
-        <Stack.Screen
-          name="checkout"
-          options={{
-            headerShown: true,
-            headerTitle: "შეკვეთის გაფორმება",
-          }}
-        />
-        <Stack.Screen
           name="order/[id]"
           options={{
             headerShown: true,
-            headerTitle: "შეკვეთის თვალყურისდევნება",
+            headerTitle: "შეკვეთის დეტალები",
+            headerTintColor: "#0EA5E9",
           }}
         />
       </Stack>
@@ -79,14 +59,18 @@ export default function RootLayout() {
   if (!isReady) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#10b981" />
+        <ActivityIndicator size="large" color="#0EA5E9" />
       </View>
     );
   }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RootLayoutNav />
+      <SocketProvider>
+        <NotificationProvider>
+          <RootLayoutNav />
+        </NotificationProvider>
+      </SocketProvider>
     </QueryClientProvider>
   );
 }

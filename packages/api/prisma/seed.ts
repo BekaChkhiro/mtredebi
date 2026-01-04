@@ -190,7 +190,143 @@ async function main() {
   }
 
   console.log("Created second restaurant with menu");
-  console.log("Seeding completed!");
+
+  // Create restaurant admin for first restaurant
+  const adminUser = await prisma.user.upsert({
+    where: { phone: '+995599888777' },
+    update: {
+      role: 'RESTAURANT_ADMIN',
+      restaurantId: restaurant.id,
+    },
+    create: {
+      phone: '+995599888777',
+      name: 'რესტორნის ადმინი',
+      role: 'RESTAURANT_ADMIN',
+      restaurantId: restaurant.id,
+    },
+  });
+  console.log("Created restaurant admin:", adminUser.phone);
+
+  // Create restaurant admin for second restaurant
+  const adminUser2 = await prisma.user.upsert({
+    where: { phone: '+995599888666' },
+    update: {
+      role: 'RESTAURANT_ADMIN',
+      restaurantId: restaurant2.id,
+    },
+    create: {
+      phone: '+995599888666',
+      name: 'ბურგერ ჰაუსის ადმინი',
+      role: 'RESTAURANT_ADMIN',
+      restaurantId: restaurant2.id,
+    },
+  });
+  console.log("Created restaurant admin 2:", adminUser2.phone);
+
+  // Create test customer
+  await prisma.user.upsert({
+    where: { phone: '+995599123456' },
+    update: {},
+    create: {
+      phone: '+995599123456',
+      name: 'ტესტ მომხმარებელი',
+      role: 'CUSTOMER',
+    },
+  });
+  console.log("Created test customer: +995599123456");
+
+  // Create test driver
+  const driverUser = await prisma.user.upsert({
+    where: { phone: '+995599777888' },
+    update: {
+      role: 'DRIVER',
+    },
+    create: {
+      phone: '+995599777888',
+      name: 'ტესტ მძღოლი',
+      role: 'DRIVER',
+    },
+  });
+
+  await prisma.driver.upsert({
+    where: { userId: driverUser.id },
+    update: {},
+    create: {
+      userId: driverUser.id,
+      vehicleType: 'SCOOTER',
+      isOnline: false,
+      isAvailable: true,
+    },
+  });
+  console.log("Created test driver: +995599777888");
+
+  // Create a test customer
+  const testCustomer = await prisma.user.upsert({
+    where: { phone: '+995599123456' },
+    update: {},
+    create: {
+      phone: '+995599123456',
+      name: 'ტესტ კლიენტი',
+      role: 'CUSTOMER',
+    },
+  });
+
+  // Create a test READY order for driver testing
+  const testOrder = await prisma.order.upsert({
+    where: { id: 'test-order-001' },
+    update: { status: 'READY' },
+    create: {
+      id: 'test-order-001',
+      orderNumber: 'ORD-0001',
+      customerId: testCustomer.id,
+      restaurantId: restaurant.id,
+      status: 'READY',
+      deliveryAddress: 'რუსთაველის 25, სამტრედია',
+      deliveryLat: 42.1450,
+      deliveryLng: 42.3560,
+      subtotal: 21.5,
+      deliveryFee: 3,
+      totalAmount: 24.5,
+      customerNotes: 'სატესტო შეკვეთა',
+    },
+  });
+
+  // Add order items
+  await prisma.orderItem.upsert({
+    where: { id: 'test-order-item-001' },
+    update: {},
+    create: {
+      id: 'test-order-item-001',
+      orderId: testOrder.id,
+      menuItemId: '11111111-0001-0001-0001-000000000001',
+      name: 'მარგარიტა',
+      quantity: 1,
+      price: 18.5,
+    },
+  });
+
+  await prisma.orderItem.upsert({
+    where: { id: 'test-order-item-002' },
+    update: {},
+    create: {
+      id: 'test-order-item-002',
+      orderId: testOrder.id,
+      menuItemId: '11111111-0001-0001-0001-000000000004',
+      name: 'კოკა-კოლა',
+      quantity: 1,
+      price: 3.0,
+    },
+  });
+
+  console.log("Created test READY order: ORD-0001");
+
+  console.log("\n🎉 Seeding completed!\n");
+  console.log("📱 Test accounts:");
+  console.log("   Restaurant Admin (პიცა პალაცო): +995599888777");
+  console.log("   Restaurant Admin (ბურგერ ჰაუსი): +995599888666");
+  console.log("   Customer: +995599123456");
+  console.log("   Driver: +995599777888");
+  console.log("\n💡 OTP codes are logged in console during development");
 }
 
 main()

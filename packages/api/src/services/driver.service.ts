@@ -68,9 +68,18 @@ export async function getAvailableOrders(driverId: string) {
     orderBy: { createdAt: 'desc' },
     include: {
       restaurant: {
-        select: { id: true, name: true, address: true, lat: true, lng: true },
+        select: { id: true, name: true, address: true, lat: true, lng: true, phone: true, imageUrl: true },
       },
-      items: true,
+      customer: {
+        select: { id: true, name: true, phone: true },
+      },
+      items: {
+        include: {
+          menuItem: {
+            select: { id: true, name: true, imageUrl: true },
+          },
+        },
+      },
     },
   });
 }
@@ -89,12 +98,18 @@ export async function getMyOrders(userId: string) {
     orderBy: { createdAt: 'desc' },
     include: {
       restaurant: {
-        select: { id: true, name: true, address: true, lat: true, lng: true, phone: true },
+        select: { id: true, name: true, address: true, lat: true, lng: true, phone: true, imageUrl: true },
       },
       customer: {
         select: { id: true, name: true, phone: true },
       },
-      items: true,
+      items: {
+        include: {
+          menuItem: {
+            select: { id: true, name: true, imageUrl: true },
+          },
+        },
+      },
     },
   });
 }
@@ -115,7 +130,17 @@ export async function getOrderHistory(userId: string, page = 1, limit = 20) {
       orderBy: { createdAt: 'desc' },
       include: {
         restaurant: {
-          select: { id: true, name: true },
+          select: { id: true, name: true, address: true, lat: true, lng: true, phone: true, imageUrl: true },
+        },
+        customer: {
+          select: { id: true, name: true, phone: true },
+        },
+        items: {
+          include: {
+            menuItem: {
+              select: { id: true, name: true, imageUrl: true },
+            },
+          },
         },
       },
     }),
@@ -286,7 +311,7 @@ export async function deliverOrder(
     throw new Error('NOT_YOUR_ORDER');
   }
 
-  if (order.status !== 'DELIVERING') {
+  if (order.status !== 'DELIVERING' && order.status !== 'PICKED_UP') {
     throw new Error('INVALID_STATUS');
   }
 

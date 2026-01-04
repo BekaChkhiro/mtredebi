@@ -14,9 +14,16 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+      try {
+        const authData = localStorage.getItem('restaurant-auth');
+        if (authData) {
+          const parsed = JSON.parse(authData);
+          if (parsed.token) {
+            config.headers.Authorization = `Bearer ${parsed.token}`;
+          }
+        }
+      } catch (e) {
+        console.error('Failed to get auth token:', e);
       }
     }
     return config;
@@ -30,8 +37,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem('restaurant-auth');
         window.location.href = '/login';
       }
     }

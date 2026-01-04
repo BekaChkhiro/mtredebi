@@ -195,7 +195,7 @@ export default function OrdersPage() {
                       </div>
                       {order.customerNotes && (
                         <p className="mt-2 text-sm text-gray-600 italic">
-                          "{order.customerNotes}"
+                          &ldquo;{order.customerNotes}&rdquo;
                         </p>
                       )}
                     </div>

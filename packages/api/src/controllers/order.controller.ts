@@ -221,13 +221,13 @@ export async function getRestaurantOrders(req: Request, res: Response): Promise<
       return;
     }
 
-    // TODO: Get restaurantId from authenticated restaurant admin
-    const restaurantId = req.query.restaurantId as string;
+    // Get restaurantId from authenticated restaurant admin
+    const restaurantId = req.user?.restaurantId;
 
     if (!restaurantId) {
-      res.status(400).json({
+      res.status(403).json({
         success: false,
-        error: { code: 'MISSING_RESTAURANT', message: 'restaurantId სავალდებულოა' },
+        error: { code: 'MISSING_RESTAURANT', message: 'რესტორანი არ არის მინიჭებული თქვენს ანგარიშზე' },
       });
       return;
     }

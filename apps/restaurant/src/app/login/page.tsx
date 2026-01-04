@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Phone, ArrowRight, Loader2 } from 'lucide-react';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
 
 export default function LoginPage() {
-  const router = useRouter();
   const { setAuth } = useAuthStore();
 
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
@@ -50,9 +48,16 @@ export default function LoginPage() {
         return;
       }
 
-      setAuth(token, user);
-      useAuthStore.getState().setRestaurant(restaurant);
-      router.push('/dashboard');
+      // Save auth data and redirect
+      console.log('[Login] Saving auth data...');
+      setAuth(token, user, restaurant);
+
+      // Verify it was saved
+      const saved = localStorage.getItem('restaurant-auth');
+      console.log('[Login] Saved to localStorage:', saved);
+
+      console.log('[Login] Redirecting to dashboard...');
+      window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.message || 'არასწორი კოდი');
     } finally {

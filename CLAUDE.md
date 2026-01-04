@@ -16,8 +16,8 @@ Food delivery platform სამტრედიისთვის.
 
 ## მიმდინარე სტატუსი
 - **კვირა:** 1
-- **დღე:** 4
-- **ფაზა:** Customer Mobile App Development 🚧 (მიმდინარე)
+- **დღე:** 5
+- **ფაზა:** Admin Panel Development 🚧 (მიმდინარე)
 
 ## დღევანდელი პროგრესი
 - [x] Auth API - ტელეფონით ავტორიზაცია (OTP)
@@ -239,12 +239,51 @@ Next.js 14 + App Router restaurant admin panel. Tech Stack:
 cd apps/restaurant && npm run dev  # port 3002
 ```
 
-## შემდეგი სესიაზე
-Customer App + Restaurant Dashboard დასრულებულია! ✅
+## Driver Mobile App (apps/driver/)
+React Native + Expo driver app. Tech Stack:
+- **Navigation:** Expo Router (file-based)
+- **State:** Zustand + React Query
+- **Styling:** NativeWind (Tailwind CSS)
+- **Real-time:** Socket.io-client
+- **Location:** expo-location + expo-task-manager (background tracking)
 
-შემდეგი apps:
-1. Driver Mobile App (React Native + Expo)
-2. Admin Panel (Next.js)
+### შექმნილი Screens:
+- `app/(auth)/phone.tsx` - ტელეფონის შეყვანა
+- `app/(auth)/otp.tsx` - OTP ვერიფიკაცია (მხოლოდ DRIVER როლისთვის)
+- `app/(tabs)/index.tsx` - ხელმისაწვდომი შეკვეთები + აქტიური შეკვეთა
+- `app/(tabs)/history.tsx` - შეკვეთების ისტორია
+- `app/(tabs)/profile.tsx` - პროფილი + სტატუსის მართვა
+- `app/order/[id].tsx` - შეკვეთის დეტალები
+
+### შექმნილი Stores & Hooks:
+- `src/store/auth.store.ts` - JWT + User state + Driver status
+- `src/hooks/useDriver.ts` - Driver API operations
+- `src/hooks/useSocket.ts` - Socket.io real-time updates
+- `src/hooks/useLocation.ts` - Background location tracking
+
+### შექმნილი Components:
+- `src/components/SocketProvider.tsx` - Socket connection provider
+- `src/components/NotificationProvider.tsx` - Push notifications provider
+
+### ფუნქციონალი:
+- ონლაინ/ოფლაინ სტატუსის მართვა
+- ხელმისაწვდომი შეკვეთების ჩვენება (READY სტატუსით)
+- შეკვეთის მიღება, აღება, მიწოდება
+- Background location tracking (expo-task-manager)
+- Socket.io real-time განახლებები
+- Maps integration (ნავიგაცია, ზარი)
+- Push Notifications
+
+### გაშვება:
+```bash
+cd apps/driver && npm run dev
+```
+
+## შემდეგი სესიაზე
+Customer App + Restaurant Dashboard + Driver App დასრულებულია! ✅
+
+შემდეგი app:
+1. Admin Panel (Next.js)
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
@@ -262,6 +301,7 @@ Customer App + Restaurant Dashboard დასრულებულია! ✅
 - 2026-01-04: Push Notifications (Expo) + Backend notification service ✅
 - 2026-01-04: Restaurant Dashboard (Next.js) - login, orders, menu, settings ✅
 - 2026-01-04: User-Restaurant linking + restaurantId in auth ✅
+- 2026-01-05: Driver Mobile App - auth, orders, history, profile, location tracking ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)

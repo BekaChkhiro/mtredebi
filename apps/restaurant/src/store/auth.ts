@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 interface User {
   id: string;
@@ -28,54 +27,82 @@ interface AuthState {
   user: User | null;
   restaurant: Restaurant | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
+  isInitialized: boolean;
 
-  setAuth: (token: string, user: User) => void;
-  setRestaurant: (restaurant: Restaurant) => void;
+  initialize: () => void;
+  setAuth: (token: string, user: User, restaurant: Restaurant) => void;
   logout: () => void;
-  setLoading: (loading: boolean) => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
+const STORAGE_KEY = 'restaurant-auth';
+
+// Helper to save to localStorage
+function saveToStorage(data: { token: string; user: User; restaurant: Restaurant }) {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+}
+
+// Helper to load from localStorage
+function loadFromStorage(): { token: string; user: User; restaurant: Restaurant } | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      return JSON.parse(data);
+    }
+  } catch (e) {
+    console.error('Failed to load auth from storage:', e);
+  }
+  return null;
+}
+
+// Helper to clear localStorage
+function clearStorage() {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+  token: null,
+  user: null,
+  restaurant: null,
+  isAuthenticated: false,
+  isInitialized: false,
+
+  initialize: () => {
+    const stored = loadFromStorage();
+    if (stored) {
+      set({
+        token: stored.token,
+        user: stored.user,
+        restaurant: stored.restaurant,
+        isAuthenticated: true,
+        isInitialized: true,
+      });
+    } else {
+      set({ isInitialized: true });
+    }
+  },
+
+  setAuth: (token, user, restaurant) => {
+    saveToStorage({ token, user, restaurant });
+    set({
+      token,
+      user,
+      restaurant,
+      isAuthenticated: true,
+    });
+  },
+
+  logout: () => {
+    clearStorage();
+    set({
       token: null,
       user: null,
       restaurant: null,
       isAuthenticated: false,
-      isLoading: true,
-
-      setAuth: (token, user) =>
-        set({
-          token,
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-        }),
-
-      setRestaurant: (restaurant) =>
-        set({ restaurant }),
-
-      logout: () => {
-        set({
-          token: null,
-          user: null,
-          restaurant: null,
-          isAuthenticated: false,
-          isLoading: false,
-        });
-      },
-
-      setLoading: (isLoading) => set({ isLoading }),
-    }),
-    {
-      name: 'restaurant-auth',
-      partialize: (state) => ({
-        token: state.token,
-        user: state.user,
-        restaurant: state.restaurant,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    }
-  )
-);
+    });
+  },
+}));

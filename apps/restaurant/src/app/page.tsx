@@ -7,17 +7,23 @@ import { Loader2 } from 'lucide-react';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isInitialized, initialize } = useAuthStore();
 
+  // Initialize auth from localStorage on mount
   useEffect(() => {
-    if (!isLoading) {
+    initialize();
+  }, [initialize]);
+
+  // Redirect based on auth state
+  useEffect(() => {
+    if (isInitialized) {
       if (isAuthenticated) {
         router.replace('/dashboard');
       } else {
         router.replace('/login');
       }
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isInitialized, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
