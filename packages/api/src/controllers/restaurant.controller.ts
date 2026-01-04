@@ -127,14 +127,13 @@ export async function addCategory(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // For MVP: Use first restaurant or require restaurantId
-    // TODO: Link restaurant admins to their restaurants
-    const restaurantId = req.body.restaurantId;
+    // Get restaurantId from authenticated user
+    const restaurantId = req.user?.restaurantId;
 
     if (!restaurantId) {
-      res.status(400).json({
+      res.status(403).json({
         success: false,
-        error: { code: 'MISSING_RESTAURANT', message: 'restaurantId სავალდებულოა' },
+        error: { code: 'NO_RESTAURANT', message: 'რესტორანი არ არის მინიჭებული' },
       });
       return;
     }
@@ -352,11 +351,11 @@ export async function uploadRestaurantImage(req: Request, res: Response): Promis
       return;
     }
 
-    const restaurantId = req.body.restaurantId;
+    const restaurantId = req.user?.restaurantId;
     if (!restaurantId) {
-      res.status(400).json({
+      res.status(403).json({
         success: false,
-        error: { code: 'MISSING_RESTAURANT', message: 'restaurantId სავალდებულოა' },
+        error: { code: 'NO_RESTAURANT', message: 'რესტორანი არ არის მინიჭებული' },
       });
       return;
     }
@@ -410,11 +409,11 @@ export async function uploadRestaurantCover(req: Request, res: Response): Promis
       return;
     }
 
-    const restaurantId = req.body.restaurantId;
+    const restaurantId = req.user?.restaurantId;
     if (!restaurantId) {
-      res.status(400).json({
+      res.status(403).json({
         success: false,
-        error: { code: 'MISSING_RESTAURANT', message: 'restaurantId სავალდებულოა' },
+        error: { code: 'NO_RESTAURANT', message: 'რესტორანი არ არის მინიჭებული' },
       });
       return;
     }

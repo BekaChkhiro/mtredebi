@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken, getUserById } from '../services/auth.service.js';
-import { User, UserRole } from '@prisma/client';
+import { User, UserRole, Restaurant } from '@prisma/client';
+
+type UserWithRestaurant = User & { restaurant: Restaurant | null };
 
 // Extend Express Request type
 declare global {
   namespace Express {
     interface Request {
-      user?: User;
+      user?: UserWithRestaurant;
       userId?: string;
     }
   }

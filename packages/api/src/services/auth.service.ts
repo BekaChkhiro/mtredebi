@@ -132,6 +132,9 @@ export async function verifyOTP(phone: string, code: string): Promise<AuthResult
   // Find or create user
   let user = await prisma.user.findUnique({
     where: { phone: normalizedPhone },
+    include: {
+      restaurant: true,
+    },
   });
 
   const isNewUser = !user;
@@ -140,6 +143,9 @@ export async function verifyOTP(phone: string, code: string): Promise<AuthResult
     user = await prisma.user.create({
       data: {
         phone: normalizedPhone,
+      },
+      include: {
+        restaurant: true,
       },
     });
   }
@@ -172,11 +178,12 @@ export function verifyToken(token: string): TokenPayload | null {
 }
 
 // Get user by ID
-export async function getUserById(userId: string): Promise<User | null> {
+export async function getUserById(userId: string) {
   return prisma.user.findUnique({
     where: { id: userId },
     include: {
       addresses: true,
+      restaurant: true,
     },
   });
 }

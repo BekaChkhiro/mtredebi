@@ -100,7 +100,9 @@ export async function verifyOTP(req: Request, res: Response): Promise<void> {
           name: result.user.name,
           avatarUrl: result.user.avatarUrl,
           role: result.user.role,
+          restaurantId: result.user.restaurantId,
         },
+        restaurant: result.user.restaurant || null,
         isNewUser: result.isNewUser,
       },
     });

@@ -213,13 +213,38 @@ React Native + Expo customer app. Tech Stack:
 cd apps/customer && npm run dev
 ```
 
+## Restaurant Dashboard (apps/restaurant/)
+Next.js 14 + App Router restaurant admin panel. Tech Stack:
+- **Framework:** Next.js 14 (App Router)
+- **State:** Zustand + React Query
+- **Styling:** Tailwind CSS
+- **Real-time:** Socket.io-client
+
+### შექმნილი Pages:
+- `app/login/page.tsx` - OTP ავტორიზაცია
+- `app/dashboard/page.tsx` - მთავარი (სტატისტიკა)
+- `app/dashboard/orders/page.tsx` - შეკვეთების მართვა
+- `app/dashboard/menu/page.tsx` - მენიუს მართვა (კატეგორიები + items)
+- `app/dashboard/settings/page.tsx` - რესტორნის პარამეტრები
+
+### ფუნქციონალი:
+- შეკვეთების real-time განახლება (Socket.io)
+- შეკვეთის სტატუსის ცვლილება (PENDING → ACCEPTED → PREPARING → READY)
+- მენიუს კატეგორიების CRUD
+- მენიუს items CRUD + availability toggle
+- რესტორნის სურათების ატვირთვა
+
+### გაშვება:
+```bash
+cd apps/restaurant && npm run dev  # port 3002
+```
+
 ## შემდეგი სესიაზე
-Customer App დასრულებულია! ✅
+Customer App + Restaurant Dashboard დასრულებულია! ✅
 
 შემდეგი apps:
-1. Restaurant Dashboard (Next.js)
-2. Driver Mobile App (React Native + Expo)
-3. Admin Panel (Next.js)
+1. Driver Mobile App (React Native + Expo)
+2. Admin Panel (Next.js)
 
 ## ბოლო ცვლილებები
 - 2025-01-03: პროექტის დაწყება, დოკუმენტაციის შექმნა
@@ -235,6 +260,8 @@ Customer App დასრულებულია! ✅
 - 2026-01-04: Customer Mobile App - project setup, screens, stores
 - 2026-01-04: Socket.io real-time integration + Driver location tracking ✅
 - 2026-01-04: Push Notifications (Expo) + Backend notification service ✅
+- 2026-01-04: Restaurant Dashboard (Next.js) - login, orders, menu, settings ✅
+- 2026-01-04: User-Restaurant linking + restaurantId in auth ✅
 
 ## მნიშვნელოვანი გადაწყვეტილებები
 - PostgreSQL Railway-ზე (არა Supabase)
