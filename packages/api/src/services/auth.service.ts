@@ -68,7 +68,7 @@ export async function sendOTP(phone: string): Promise<{ success: boolean; messag
     },
   });
 
-  if (recentOTPs >= 3) {
+  if (recentOTPs >= 10) { // TODO: change back to 3 after testing
     return {
       success: false,
       message: 'ძალიან ბევრი მცდელობა. სცადეთ 10 წუთში.',

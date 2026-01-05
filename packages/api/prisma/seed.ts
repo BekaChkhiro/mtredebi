@@ -260,6 +260,20 @@ async function main() {
   });
   console.log("Created test driver: +995599777888");
 
+  // Create platform admin
+  const platformAdmin = await prisma.user.upsert({
+    where: { phone: '+995599000111' },
+    update: {
+      role: 'ADMIN',
+    },
+    create: {
+      phone: '+995599000111',
+      name: 'პლატფორმის ადმინი',
+      role: 'ADMIN',
+    },
+  });
+  console.log("Created platform admin: +995599000111");
+
   // Create a test customer
   const testCustomer = await prisma.user.upsert({
     where: { phone: '+995599123456' },
@@ -322,6 +336,7 @@ async function main() {
 
   console.log("\n🎉 Seeding completed!\n");
   console.log("📱 Test accounts:");
+  console.log("   Platform Admin: +995599000111");
   console.log("   Restaurant Admin (პიცა პალაცო): +995599888777");
   console.log("   Restaurant Admin (ბურგერ ჰაუსი): +995599888666");
   console.log("   Customer: +995599123456");
